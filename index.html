@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wiki del Proceso Administrativo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f4f6f9;
+      color: #1a1a2e;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .wiki-wrap {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 1.25rem 1.25rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .sidebar-logo .logo-icon {
+      width: 36px; height: 36px;
+      background: #1a56db;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 8px;
+    }
+    .sidebar-logo .logo-icon svg { width: 20px; height: 20px; fill: white; }
+    .sidebar-logo h1 { font-size: 14px; font-weight: 700; color: #0f172a; line-height: 1.3; }
+    .sidebar-logo p  { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+    .nav-section-label {
+      font-size: 10px; font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 1rem 1.25rem 0.4rem;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 1.25rem;
+      font-size: 13px; color: #475569;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .nav-item:hover { background: #f1f5f9; color: #0f172a; }
+    .nav-item.active {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-left-color: #1d4ed8;
+      font-weight: 600;
+    }
+    .nav-item .nav-icon { font-size: 16px; flex-shrink: 0; }
+
+    /* ── Main content ── */
+    .main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 55%, #2563eb 100%);
+      padding: 2.5rem 2.5rem 2rem;
+      color: white;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px; font-weight: 600;
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+    }
+    .hero h2 { font-size: 26px; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.2; }
+    .hero p  { font-size: 14px; opacity: 0.85; line-height: 1.6; max-width: 560px; }
+
+    /* ── Content sections ── */
+    .content-area { padding: 2rem 2.5rem; flex: 1; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .section-header {
+      display: flex; align-items: flex-start; gap: 14px;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .section-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .section-header h2 { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .section-header p  { font-size: 13px; color: #64748b; line-height: 1.5; }
+
+    /* Cards grid */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .info-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .info-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-1px); }
+    .info-card-icon { font-size: 24px; margin-bottom: 8px; }
+    .info-card h3 { font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 5px; }
+    .info-card p  { font-size: 12px; color: #64748b; line-height: 1.5; }
+
+    /* Prose */
+    .prose p {
+      font-size: 14px; color: #475569; line-height: 1.7;
+      margin-bottom: 0.85rem;
+    }
+
+    /* Quick-ask chips */
+    .quick-label { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px; }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #f1f5f9; border: 1px solid #cbd5e1;
+      border-radius: 20px; padding: 6px 14px;
+      font-size: 12px; color: #475569;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .chip:hover { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+
+    /* ── Chatbot panel ── */
+    .chat-fab {
+      position: fixed;
+      bottom: 24px; right: 24px;
+      z-index: 1000;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 10px;
+    }
+
+    .chat-window {
+      width: 340px;
+      height: 460px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.14);
+    }
+    .chat-window.open { display: flex; }
+
+    .chat-header {
+      background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+      padding: 0.9rem 1rem;
+      display: flex; align-items: center; gap: 10px; color: white;
+    }
+    .chat-avatar {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .chat-header-info { flex: 1; }
+    .chat-header-info p    { font-size: 14px; font-weight: 700; }
+    .chat-header-info span { font-size: 11px; opacity: 0.8; }
+    .chat-close {
+      background: none; border: none; color: white;
+      font-size: 20px; cursor: pointer; opacity: 0.7; line-height: 1;
+    }
+    .chat-close:hover { opacity: 1; }
+
+    .chat-msgs {
+      flex: 1; overflow-y: auto;
+      padding: 1rem;
+      display: flex; flex-direction: column; gap: 10px;
+      background: #f8fafc;
+    }
+    .msg {
+      max-width: 86%;
+      padding: 9px 13px;
+      border-radius: 14px;
+      font-size: 13px; line-height: 1.45;
+    }
+    .msg.bot {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .msg.user {
+      background: #1d4ed8; color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .msg.typing {
+      display: flex; align-items: center; gap: 5px;
+      padding: 12px 14px;
+    }
+    .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #94a3b8;
+      animation: bounce 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%,60%,100% { transform: translateY(0); }
+      30% { transform: translateY(-5px); }
+    }
+
+    .chat-input-row {
+      display: flex; gap: 8px;
+      padding: 0.75rem;
+      border-top: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+    .chat-input-row input {
+      flex: 1;
+      font-size: 13px;
+      padding: 9px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      outline: none;
+      color: #0f172a;
+      background: #f8fafc;
+    }
+    .chat-input-row input:focus { border-color: #93c5fd; background: #fff; }
+    .send-btn {
+      background: #1d4ed8; color: white;
+      border: none; border-radius: 10px;
+      padding: 9px 13px; cursor: pointer; font-size: 16px;
+      display: flex; align-items: center;
+      transition: background 0.15s;
+    }
+    .send-btn:hover { background: #1e40af; }
+    .send-btn:disabled { opacity: 0.45; cursor: default; }
+
+    .open-btn {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: #1d4ed8; color: white;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 16px rgba(29,78,216,0.4);
+      transition: all 0.2s;
+    }
+    .open-btn:hover { background: #1e40af; transform: scale(1.07); }
+
+    /* ── Dialogflow Messenger override (cuando uses el código real) ── */
+    df-messenger {
+      --df-messenger-bot-message: #ffffff;
+      --df-messenger-button-titlebar-color: #1d4ed8;
+      --df-messenger-chat-background-color: #f8fafc;
+      --df-messenger-font-color: #0f172a;
+      --df-messenger-send-icon: #1d4ed8;
+      --df-messenger-user-message: #1d4ed8;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; flex-wrap: wrap; }
+      .main { margin-left: 0; }
+      .hero { padding: 1.5rem; }
+      .content-area { padding: 1.25rem 1.5rem; }
+      .chat-fab { bottom: 16px; right: 16px; }
+      .chat-window { width: calc(100vw - 32px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wiki-wrap">
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      </div>
+      <h1>Wiki Administrativa</h1>
+      <p>Proceso Administrativo</p>
+    </div>
+
+    <p class="nav-section-label">Etapas</p>
+    <a class="nav-item active" onclick="showSection('planeacion', this)">
+      <span class="nav-icon">🎯</span> Planeación
+    </a>
+    <a class="nav-item" onclick="showSection('organizacion', this)">
+      <span class="nav-icon">🏗️</span> Organización
+    </a>
+    <a class="nav-item" onclick="showSection('direccion', this)">
+      <span class="nav-icon">👥</span> Dirección
+    </a>
+    <a class="nav-item" onclick="showSection('control', this)">
+      <span class="nav-icon">📊</span> Control
+    </a>
+
+    <p class="nav-section-label">Recursos</p>
+    <a class="nav-item" onclick="showSection('chatbot', this)">
+      <span class="nav-icon">🤖</span> Asistente IA
+    </a>
+  </nav>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <div class="main">
+
+    <div class="hero">
+      <div class="hero-badge">📋 Repositorio Central de Gestión</div>
+      <h2>Wiki del Proceso Administrativo</h2>
+      <p>Bienvenido al repositorio central de gestión. Utiliza el menú lateral para explorar las etapas o pregunta a nuestro Asistente IA en la esquina inferior derecha.</p>
+    </div>
+
+    <div class="content-area">
+
+      <!-- ── PLANEACIÓN ── -->
+      <div id="sec-planeacion" class="section active">
+        <div class="section-header">
+          <div class="section-icon" style="background:#eff6ff;">🎯</div>
+          <div>
+            <h2>Planeación</h2>
+            <p>Determinación de objetivos y elección de cursos de acción para lograrlos, con base en la investigación y elaboración de un esquema detallado.</p>
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-icon">🏳️</div>
+            <h3>Misión y Visión</h3>
+            <p>El propósito fundamental y el estado futuro deseado de la organización.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🗺️</div>
+            <h3>Estrategias</h3>
+            <p>Cursos de acción general para alcanzar los objetivos establecidos.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">📌</div>
+            <h3>Objetivos SMART</h3>
+            <p>Metas específicas, medibles, alcanzables, relevantes y con tiempo definido.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">📋</div>
+            <h3>Políticas</h3>
+            <p>Lineamientos generales que orientan el pensamiento en la toma de decisiones.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>La planeación es la primera y fundamental etapa del proceso administrativo. Consiste en fijar el curso concreto de acción que ha de seguirse, estableciendo los principios que habrán de orientarlo, la secuencia de operaciones para realizarlo y la determinación de tiempo y números necesarios para su realización.</p>
+        </div>
+        <p class="quick-label">Preguntas frecuentes — clic para preguntar al asistente:</p>
+        <div class="chip-row">
+          <span class="chip" onclick="askBot('¿Cuál es la diferencia entre misión y visión?')">💬 ¿Diferencia entre misión y visión?</span>
+          <span class="chip" onclick="askBot('¿Cómo se elabora un plan estratégico?')">💬 ¿Cómo hacer un plan estratégico?</span>
+          <span class="chip" onclick="askBot('¿Qué son los objetivos SMART?')">💬 ¿Qué son los objetivos SMART?</span>
+        </div>
+      </div>
+
+      <!-- ── ORGANIZACIÓN ── -->
+      <div id="sec-organizacion" class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#f0fdf4;">🏗️</div>
+          <div>
+            <h2>Organización</h2>
+            <p>Establecimiento de la estructura necesaria para la sistematización racional de los recursos, mediante la determinación de jerarquías y funciones.</p>
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-icon">📐</div>
+            <h3>Estructura Orgánica</h3>
+            <p>Define la departamentalización, jerarquización y descripción de funciones para cada puesto.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🗂️</div>
+            <h3>Departamentalización</h3>
+            <p>Agrupación lógica de actividades y recursos en unidades manejables y coordinadas.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">📝</div>
+            <h3>Descripción de puestos</h3>
+            <p>Detalle formal de funciones, responsabilidades y requisitos de cada cargo.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🔗</div>
+            <h3>Delegación de autoridad</h3>
+            <p>Asignación de responsabilidades y poder de decisión a los colaboradores.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>La organización es el establecimiento de la estructura necesaria para la sistematización racional de los recursos, mediante la determinación de jerarquías, disposición, correlación y agrupación de actividades, con el fin de poder realizar y simplificar las funciones del grupo social.</p>
+        </div>
+        <p class="quick-label">Preguntas frecuentes:</p>
+        <div class="chip-row">
+          <span class="chip" onclick="askBot('¿Qué tipos de estructuras organizacionales existen?')">💬 Tipos de estructuras organizacionales</span>
+          <span class="chip" onclick="askBot('¿Cómo se hace un organigrama?')">💬 ¿Cómo hacer un organigrama?</span>
+          <span class="chip" onclick="askBot('¿Qué es la departamentalización?')">💬 ¿Qué es departamentalizar?</span>
+        </div>
+      </div>
+
+      <!-- ── DIRECCIÓN ── -->
+      <div id="sec-direccion" class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#fffbeb;">👥</div>
+          <div>
+            <h2>Dirección</h2>
+            <p>Fase de ejecución. El liderazgo, la motivación y la comunicación son los pilares para guiar al equipo humano hacia los objetivos.</p>
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-icon">💬</div>
+            <h3>Comunicación asertiva</h3>
+            <p>Transmisión clara y efectiva de información entre todos los miembros del equipo.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🧩</div>
+            <h3>Toma de decisiones</h3>
+            <p>Proceso de elegir la mejor alternativa entre las opciones disponibles.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🌱</div>
+            <h3>Supervisión y Mentoría</h3>
+            <p>Orientación y seguimiento continuo para el desarrollo del talento humano.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🔥</div>
+            <h3>Motivación</h3>
+            <p>Técnicas para mantener al equipo comprometido con los objetivos organizacionales.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>La dirección es la ejecución de los planes de acuerdo con la estructura organizacional, mediante la guía de los esfuerzos del grupo social a través de la motivación, comunicación y supervisión para alcanzar las metas de la organización.</p>
+        </div>
+        <p class="quick-label">Preguntas frecuentes:</p>
+        <div class="chip-row">
+          <span class="chip" onclick="askBot('¿Cuáles son los estilos de liderazgo más efectivos?')">💬 Estilos de liderazgo</span>
+          <span class="chip" onclick="askBot('¿Cómo mejorar la motivación del equipo?')">💬 Motivación del equipo</span>
+          <span class="chip" onclick="askBot('¿Qué es la comunicación asertiva en una empresa?')">💬 Comunicación asertiva</span>
+        </div>
+      </div>
+
+      <!-- ── CONTROL ── -->
+      <div id="sec-control" class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#fff1f2;">📊</div>
+          <div>
+            <h2>Control</h2>
+            <p>Evaluación y corrección del desempeño para asegurar que los resultados se ajusten a los planes establecidos.</p>
+          </div>
+        </div>
+        <div class="card-grid">
+          <div class="info-card">
+            <div class="info-card-icon">📏</div>
+            <h3>Estándares</h3>
+            <p>Criterios de desempeño con los que se comparan los resultados reales obtenidos.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🔍</div>
+            <h3>Medición</h3>
+            <p>Recopilación y análisis de datos sobre el desempeño actual de la organización.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">🔄</div>
+            <h3>Acción correctiva</h3>
+            <p>Medidas adoptadas para corregir desviaciones y mejorar el rendimiento.</p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-icon">📈</div>
+            <h3>Indicadores KPI</h3>
+            <p>Métricas clave para evaluar el éxito en el logro de los objetivos organizacionales.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>El control es la evaluación y medición de la ejecución de los planes con el fin de detectar y prever desviaciones para establecer las medidas correctivas necesarias. Esta etapa cierra el ciclo del proceso administrativo, alimentando nuevamente a la planeación.</p>
+        </div>
+        <p class="quick-label">Preguntas frecuentes:</p>
+        <div class="chip-row">
+          <span class="chip" onclick="askBot('¿Qué indicadores KPI son útiles para el control administrativo?')">💬 KPIs para control</span>
+          <span class="chip" onclick="askBot('¿Cómo aplicar el ciclo PHVA en una empresa?')">💬 Ciclo PHVA</span>
+          <span class="chip" onclick="askBot('¿Cuáles son los tipos de control administrativo?')">💬 Tipos de control</span>
+        </div>
+      </div>
+
+      <!-- ── ASISTENTE IA ── -->
+      <div id="sec-chatbot" class="section">
+        <div class="section-header">
+          <div class="section-icon" style="background:#eff6ff;">🤖</div>
+          <div>
+            <h2>Asistente IA</h2>
+            <p>Chatbot integrado con Dialogflow ES para resolver dudas sobre el proceso administrativo en tiempo real.</p>
+          </div>
+        </div>
+        <div class="prose">
+          <p>El asistente virtual está disponible en la esquina inferior derecha. Está entrenado para responder preguntas sobre las 4 etapas del proceso administrativo. También puedes hacer clic en cualquier pregunta sugerida de las secciones anteriores para enviársela directamente.</p>
+        </div>
+
+        <!-- 
+          ══════════════════════════════════════════════════
+          ZONA DE INTEGRACIÓN DIALOGFLOW ES
+          ══════════════════════════════════════════════════
+          Cuando tengas tu agente de Dialogflow ES listo,
+          reemplaza el chatbot de IA de Claude por este bloque.
+
+          PASO 1: Borra el div.chat-fab completo al final del body.
+          PASO 2: Descomenta las líneas de abajo y pon tu agent-id.
+
+          <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.css">
+          <df-messenger
+            intent="WELCOME"
+            chat-title="Wiki Administrativa"
+            agent-id="PEGA-AQUI-TU-AGENT-ID"
+            language-code="es">
+          </df-messenger>
+          <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js"></script>
+          ══════════════════════════════════════════════════
+        -->
+
+        <div style="background:#f1f5f9; border:1px solid #e2e8f0; border-radius:12px; padding:1.25rem; margin-top:0.5rem;">
+          <p style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:0.75rem;">Ejemplos de preguntas al asistente:</p>
+          <div class="chip-row">
+            <span class="chip" onclick="askBot('¿Cuáles son las 4 etapas del proceso administrativo?')">💬 Las 4 etapas del proceso</span>
+            <span class="chip" onclick="askBot('¿Qué es la administración por objetivos?')">💬 Administración por objetivos</span>
+            <span class="chip" onclick="askBot('Dame un ejemplo de planeación estratégica')">💬 Ejemplo de planeación estratégica</span>
+            <span class="chip" onclick="askBot('¿Cuál es la diferencia entre dirección y liderazgo?')">💬 Dirección vs liderazgo</span>
+            <span class="chip" onclick="askBot('¿Qué es el proceso administrativo y quién lo propuso?')">💬 Origen del proceso administrativo</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main -->
+</div><!-- /wiki-wrap -->
+
+
+<!-- ═══════════════ CHATBOT FLOTANTE (IA Claude) ═══════════════ -->
+<!--
+  NOTA: Este chatbot usa la API de Claude como demostración.
+  Para producción, reemplázalo con el bloque de Dialogflow ES
+  que está comentado en la sección "Asistente IA" arriba.
+-->
+<div class="chat-fab">
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-header-info">
+        <p>Asistente Wiki</p>
+        <span>IA · Proceso Administrativo</span>
+      </div>
+      <button class="chat-close" onclick="toggleChat()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="chat-msgs" id="chatMsgs">
+      <div class="msg bot">¡Hola! Soy tu asistente de la Wiki del Proceso Administrativo. Puedo ayudarte con dudas sobre planeación, organización, dirección y control. ¿En qué puedo ayudarte? 😊</div>
+    </div>
+    <div class="chat-input-row">
+      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter') sendMsg()" />
+      <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Enviar">➤</button>
+    </div>
+  </div>
+  <button class="open-btn" onclick="toggleChat()" aria-label="Abrir asistente">💬</button>
+</div>
+
+
+<script>
+  /* ── Navegación ── */
+  function showSection(id, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    el.classList.add('active');
+  }
+
+  /* ── Chat ── */
+  function toggleChat() {
+    const w = document.getElementById('chatWindow');
+    w.classList.toggle('open');
+    if (w.classList.contains('open')) setTimeout(() => document.getElementById('chatInput').focus(), 120);
+  }
+
+  function askBot(q) {
+    const w = document.getElementById('chatWindow');
+    if (!w.classList.contains('open')) w.classList.add('open');
+    document.getElementById('chatInput').value = q;
+    sendMsg();
+  }
+
+  const history = [];
+
+  async function sendMsg() {
+    const input  = document.getElementById('chatInput');
+    const btn    = document.getElementById('sendBtn');
+    const text   = input.value.trim();
+    if (!text) return;
+    input.value  = '';
+    btn.disabled = true;
+
+    addMsg(text, 'user');
+    history.push({ role: 'user', content: text });
+
+    const typing = addTyping();
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body   : JSON.stringify({
+          model     : 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system    : 'Eres un asistente experto en administración de empresas, especializado en el Proceso Administrativo (Planeación, Organización, Dirección y Control). Responde siempre en español, de forma clara, concisa y educativa. Tus respuestas deben ser breves (máximo 3-4 oraciones) y prácticas. Si el usuario pregunta algo fuera del tema administrativo, redirige amablemente hacia el proceso administrativo.',
+          messages  : history
+        })
+      });
+      const data  = await res.json();
+      const reply = (data.content && data.content[0]) ? data.content[0].text : 'Lo siento, no pude procesar tu consulta en este momento.';
+      typing.remove();
+      addMsg(reply, 'bot');
+      history.push({ role: 'assistant', content: reply });
+    } catch (e) {
+      typing.remove();
+      addMsg('Ocurrió un error de conexión. Por favor intenta de nuevo.', 'bot');
+    }
+
+    btn.disabled = false;
+    input.focus();
+  }
+
+  function addMsg(text, type) {
+    const c   = document.getElementById('chatMsgs');
+    const div = document.createElement('div');
+    div.className   = 'msg ' + type;
+    div.textContent = text;
+    c.appendChild(div);
+    c.scrollTop = c.scrollHeight;
+    return div;
+  }
+
+  function addTyping() {
+    const c   = document.getElementById('chatMsgs');
+    const div = document.createElement('div');
+    div.className = 'msg bot typing';
+    div.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    c.appendChild(div);
+    c.scrollTop = c.scrollHeight;
+    return div;
+  }
+</script>
+
+</body>
+</html>
