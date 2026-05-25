@@ -526,26 +526,17 @@
           <p>El asistente virtual está disponible en la esquina inferior derecha. Está entrenado para responder preguntas sobre las 4 etapas del proceso administrativo. También puedes hacer clic en cualquier pregunta sugerida de las secciones anteriores para enviársela directamente.</p>
         </div>
 
-        <!-- 
-          ══════════════════════════════════════════════════
-          ZONA DE INTEGRACIÓN DIALOGFLOW ES
-          ══════════════════════════════════════════════════
-          Cuando tengas tu agente de Dialogflow ES listo,
-          reemplaza el chatbot de IA de Claude por este bloque.
-
-          PASO 1: Borra el div.chat-fab completo al final del body.
-          PASO 2: Descomenta las líneas de abajo y pon tu agent-id.
+    
 
           <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.css">
           <df-messenger
             intent="WELCOME"
             chat-title="Wiki Administrativa"
-            agent-id="PEGA-AQUI-TU-AGENT-ID"
+            agent-id="wikiadministrativa-qr9u"
             language-code="es">
           </df-messenger>
           <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js"></script>
-          ══════════════════════════════════════════════════
-        -->
+         
 
         <div style="background:#f1f5f9; border:1px solid #e2e8f0; border-radius:12px; padding:1.25rem; margin-top:0.5rem;">
           <p style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:0.75rem;">Ejemplos de preguntas al asistente:</p>
@@ -564,32 +555,7 @@
 </div><!-- /wiki-wrap -->
 
 
-<!-- ═══════════════ CHATBOT FLOTANTE (IA Claude) ═══════════════ -->
-<!--
-  NOTA: Este chatbot usa la API de Claude como demostración.
-  Para producción, reemplázalo con el bloque de Dialogflow ES
-  que está comentado en la sección "Asistente IA" arriba.
--->
-<div class="chat-fab">
-  <div class="chat-window" id="chatWindow">
-    <div class="chat-header">
-      <div class="chat-avatar">🤖</div>
-      <div class="chat-header-info">
-        <p>Asistente Wiki</p>
-        <span>IA · Proceso Administrativo</span>
-      </div>
-      <button class="chat-close" onclick="toggleChat()" aria-label="Cerrar">✕</button>
-    </div>
-    <div class="chat-msgs" id="chatMsgs">
-      <div class="msg bot">¡Hola! Soy tu asistente de la Wiki del Proceso Administrativo. Puedo ayudarte con dudas sobre planeación, organización, dirección y control. ¿En qué puedo ayudarte? 😊</div>
-    </div>
-    <div class="chat-input-row">
-      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." onkeydown="if(event.key==='Enter') sendMsg()" />
-      <button class="send-btn" id="sendBtn" onclick="sendMsg()" aria-label="Enviar">➤</button>
-    </div>
-  </div>
-  <button class="open-btn" onclick="toggleChat()" aria-label="Abrir asistente">💬</button>
-</div>
+
 
 
 <script>
